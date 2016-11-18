@@ -19,20 +19,6 @@
 }(this, function () {
     'use strict';
 
-    // SVG shapes used on the buttons
-    var leftArrow = '<svg width="44" height="60">' +
-            '<polyline points="30 10 10 30 30 50" stroke="rgba(255,255,255,0.5)" stroke-width="4"' +
-              'stroke-linecap="butt" fill="none" stroke-linejoin="round"/>' +
-            '</svg>',
-        rightArrow = '<svg width="44" height="60">' +
-            '<polyline points="14 10 34 30 14 50" stroke="rgba(255,255,255,0.5)" stroke-width="4"' +
-              'stroke-linecap="butt" fill="none" stroke-linejoin="round"/>' +
-            '</svg>',
-        closeX = '<svg width="30" height="30">' +
-            '<g stroke="rgb(160,160,160)" stroke-width="4">' +
-            '<line x1="5" y1="5" x2="25" y2="25"/>' +
-            '<line x1="5" y1="25" x2="25" y2="5"/>' +
-            '</g></svg>';
     // Global options and their defaults
     var options = {},
         defaults = {
@@ -48,7 +34,21 @@
             afterHide: null,
             // callback when image changes with `currentIndex` and `imagesElements.length` as parameters
             onChange: null,
-            overlayBackgroundColor: 'rgba(0,0,0,.8)'
+            overlayBackgroundColor: 'rgba(0,0,0,.8)',
+            // SVG shapes used on the buttons
+            leftArrow: '<svg width="44" height="60">' +
+                '<polyline points="30 10 10 30 30 50" stroke="rgba(255,255,255,0.5)" stroke-width="4"' +
+                  'stroke-linecap="butt" fill="none" stroke-linejoin="round"/>' +
+                '</svg>',
+            rightArrow: '<svg width="44" height="60">' +
+                '<polyline points="14 10 34 30 14 50" stroke="rgba(255,255,255,0.5)" stroke-width="4"' +
+                  'stroke-linecap="butt" fill="none" stroke-linejoin="round"/>' +
+                '</svg>',
+            closeX: '<svg width="30" height="30">' +
+                '<g stroke="rgb(160,160,160)" stroke-width="4">' +
+                '<line x1="5" y1="5" x2="25" y2="25"/>' +
+                '<line x1="5" y1="25" x2="25" y2="5"/>' +
+                '</g></svg>'
         };
     // Object containing information about features compatibility
     var supports = {};
@@ -161,7 +161,7 @@
         supports.transforms = testTransformsSupport();
         supports.svg = testSVGSupport();
 
-        buildOverlay();
+        buildOverlay(userOptions);
         removeFromCache(selector);
         bindImageClickListeners(selector, userOptions);
     }
@@ -240,7 +240,7 @@
         delete data[selector];
     }
 
-    function buildOverlay() {
+    function buildOverlay(userOptions) {
         overlay = getByID('baguetteBox-overlay');
         // Check if the overlay already exists
         if (overlay) {
@@ -264,21 +264,23 @@
         previousButton.setAttribute('type', 'button');
         previousButton.id = 'previous-button';
         previousButton.setAttribute('aria-label', 'Previous');
-        previousButton.innerHTML = supports.svg ? leftArrow : '&lt;';
+        previousButton.innerHTML = supports.svg ? userOptions.leftArrow || defaults.leftArrow : '&lt;';
+        console.log('HALLO');
+        console.log(options);
         overlay.appendChild(previousButton);
 
         nextButton = create('button');
         nextButton.setAttribute('type', 'button');
         nextButton.id = 'next-button';
         nextButton.setAttribute('aria-label', 'Next');
-        nextButton.innerHTML = supports.svg ? rightArrow : '&gt;';
+        nextButton.innerHTML = supports.svg ? userOptions.rightArrow || defaults.rightArrow : '&gt;';
         overlay.appendChild(nextButton);
 
         closeButton = create('button');
         closeButton.setAttribute('type', 'button');
         closeButton.id = 'close-button';
         closeButton.setAttribute('aria-label', 'Close');
-        closeButton.innerHTML = supports.svg ? closeX : '&times;';
+        closeButton.innerHTML = supports.svg ? userOptions.closeX || defaults.closeX : '&times;';
         overlay.appendChild(closeButton);
 
         previousButton.className = nextButton.className = closeButton.className = 'baguetteBox-button';
